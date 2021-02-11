@@ -11,7 +11,7 @@ library(spotifyr)
 ```
 ```{r}
 
-disney %>%
+combined %>%
   summarise(
     mean_speechiness = mean(speechiness),
     mean_acousticness = mean(acousticness),
@@ -29,15 +29,68 @@ disney %>%
 ```
 
 ```{r}
+eighteen <- get_playlist_audio_features("", "37i9dQZF1EjuRTGXCnqj3q")
+nineteen <- get_playlist_audio_features("", "37i9dQZF1Ethn3c8yyjsG9")
+twenty <- get_playlist_audio_features("", "37i9dQZF1EM1eb9t3OIKaB")
 
 combined <-
   bind_rows(
-    zeros %>% mutate(category = "Zeros"),
-    eighties %>% mutate(category = "Eighties")
+    eighteen %>% mutate(category = "2018"),
+    nineteen %>% mutate(category = "2019"),
+    twenty %>% mutate(category = "2020")
   )
 ```
 ```{r}
-combined %>% ggplot(aes(x = valence, y = energy, color = playlist_name)) + geom_point()
+combined %>% ggplot(aes(x = energy, y = valence, color = playlist_name)) + geom_point()
+```
+```{r}
+combined %>%
+  ggplot(aes(x = energy)) +
+  geom_histogram(binwidth = 0.1) +
+  facet_wrap(~category)
+```
+```{r}
+combined %>%
+  ggplot(aes(x = category, y = tempo)) +
+  geom_boxplot()
+
+```
+```{r}
+combined %>%                    # Start with awards.
+  mutate(
+    mode = ifelse(mode == 0, "Minor", "Major")
+  ) %>%
+  ggplot(                     # Set up the plot.
+    aes(
+      x = valence,
+      y = energy,
+      colour = mode
+    )
+  ) +
+  geom_point() +              # Scatter plot.   
+  
+  facet_wrap(~category) +     # Separate charts per playlist.
+  scale_x_continuous(         # Fine-tune the x axis.
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),   # Use grid-lines for quadrants only.
+    minor_breaks = NULL       # Remove 'minor' grid-lines.
+  ) +
+  scale_y_continuous(         # Fine-tune the y axis in the same way.
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),
+    minor_breaks = NULL
+  ) +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  
+  theme_light() +             # Use a simpler theme.
+  labs(                       # Make the titles nice.
+    x = "Valence",
+    y = "Energy",
+    colour = "Mode"
+  )
 ```
 
 The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to investigate how my music style has evolved over the last three years. Did it change much or did my type of music style stay the same? Can you tell looking at the kind of music I was listening to what kind of year I generally had. 2019 for example was a good year for me and 2020 a more harder year, is that reflected in the music? 
@@ -45,5 +98,3 @@ The corpus consists of three of my own wrapped Spotify playlists, from the years
 Comparison points would be artists and different music styles. I expect some artists to come back each year because I have been listening to them for a while now, e.g Imagine Dragons. Also when I travel I tend to be listening to more foreign music, so I expect 2018 and 2019 to have more Spanish/Portuguese/French artists in them than 2020 for example. I’m unsure if my music type/ style has significantly changed over the past three years but I am curious to look into it. 
 
 The strength of the corpus is that it contains a significant amount of representative songs and especially for 2019 and 2020 I recognize all the numbers in it. For 2018 however I notice that some songs in the wrapped playlist I have never listened to. I do not know how they got in my wrapped playlist. For example: Pastempomat sang by Dawid Pdsiadlo is a polish song and I am certain that I never listened to this song or any other polish song. In 2019 I was pretty obsessed with Billie Eilish so it is typical to see that 20 of the 100 songs in my wrapped playlist are by her."
-
-"test"
