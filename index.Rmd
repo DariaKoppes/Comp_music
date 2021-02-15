@@ -128,7 +128,10 @@ combined %>%
            label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
   annotate("text", x = 0.9, y = 0.95, 
            label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
-  ggtitle("The mood of the songs in the different wrapped playlists") 
+  ggtitle("The mood of the songs in the different wrapped playlists") +
+    geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
+  geom_vline(xintercept = 0.5, linetype="dashed", 
+                color = "orange")
 ```
 
 An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her. That is shown in the scatter plot below. As expected most of her songs fall under the category 'sad'. 
@@ -186,6 +189,9 @@ billie %>%
            label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
   annotate("text", x = 0.9, y = 0.95, 
            label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
-  ggtitle("Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019") 
+  ggtitle("Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019") +
+  geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
+  geom_vline(xintercept = 0.5, linetype="dashed", 
+                color = "orange")
 
 ```
