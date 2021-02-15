@@ -5,7 +5,7 @@ date: "14-2-2021"
 output: html_document
 ---
 
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
 library(spotifyr)
 ```
