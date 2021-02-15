@@ -144,7 +144,7 @@ billie %>%
            label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
   annotate("text", x = 0.9, y = 0.95, 
            label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
-  ggtitle("Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019") 
+  ggtitle("Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019") "test"
 
 
 ```
