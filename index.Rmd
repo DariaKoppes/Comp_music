@@ -6,7 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
 ---
-
+### Introduction
 PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
 
 The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music i listened too has evolved over the last three years. Did it change much or did it stay the same? Can you tell looking at the kind of music I was listening to what kind of year I generally had. 2019 for example was a good year for me and 2020 a more harder year, is that reflected in the music? 
@@ -46,12 +46,10 @@ billie <-
 
 ```
 
-Week 2: The first visualisations
+### Week 2: The first visualisations 
 
-To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018.  
-
-```{r, echo=FALSE, warning=FALSE}
-combined %>%
+```{r}
+histogram <- combined %>%
   ggplot(aes(x = energy, y=..density..)) +
   geom_histogram(binwidth = 0.1, col="grey", fill = "#0088cc") +
   geom_density() +
@@ -79,12 +77,20 @@ combined %>%
     colour = element_blank()
   ) +
     ggtitle("The density of songs filtered by energy over the years") 
+
+histogram
 ```
 
-A scatterplot with the energy on the y axis and valence on the x so the mood of the songs can be compared. 
+
+*** 
+
+To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018.  
+
+
+### A scatterplot with the energy on the y axis and valence on the x so the mood of the songs can be compared. 
 
 ```{r, echo=FALSE}
-combined %>%
+scatterplotyears <- combined %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
   ) %>%
@@ -139,13 +145,18 @@ combined %>%
     geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
   geom_vline(xintercept = 0.5, linetype="dashed", 
                 color = "orange")
+
+scatterplotyears
 ```
 
-An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her. That is shown in the scatter plot below. As expected most of her songs fall under the category 'sad'. 
+***
 
+An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
+
+### In depth visualisation of Billie Eilish
 
 ```{r}
-billie %>%
+scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
   ) %>%
@@ -201,4 +212,9 @@ billie %>%
   geom_vline(xintercept = 0.5, linetype="dashed", 
                 color = "orange")
 
+ggplotly(scatterplotbillie)
 ```
+
+*** 
+
+I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her. That is shown in the scatter plot below. As expected most of her songs fall under the category 'sad'. 
