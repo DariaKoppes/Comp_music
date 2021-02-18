@@ -5,8 +5,10 @@ date: "8-2-2021"
 output:
   flexdashboard::flex_dashboard:
     storyboard: true
+    theme: cosmo
 ---
 ### Introduction
+
 PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
 
 The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music i listened too has evolved over the last three years. Did it change much or did it stay the same? Can you tell looking at the kind of music I was listening to what kind of year I generally had. 2019 for example was a good year for me and 2020 a more harder year, is that reflected in the music? 
@@ -48,6 +50,8 @@ billie <-
 
 ### Week 2: The first visualisations 
 
+#### plot 1
+
 ```{r}
 histogram <- combined %>%
   ggplot(aes(x = energy, y=..density..)) +
@@ -81,8 +85,74 @@ histogram <- combined %>%
 histogram
 ```
 
+****
 
-*** 
+hoi
+
+#### plot 2
+
+```{r, echo=FALSE}
+scatterplotyears <- combined %>%
+  mutate(
+    mode = ifelse(mode == 0, "Minor", "Major")
+  ) %>%
+  ggplot(                     # Set up the plot.
+    aes(
+      x = valence,
+      y = energy,
+      colour = mode
+    )
+  ) +
+  geom_point(size = 2) +              # Scatter plot.   
+  
+  facet_wrap(~category) +     # Separate charts per playlist.
+  scale_x_continuous(         # Fine-tune the x axis.
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),   # Use grid-lines for quadrants only.
+    minor_breaks = NULL       # Remove 'minor' grid-lines.
+  ) +
+  scale_y_continuous(         # Fine-tune the y axis in the same way.
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),
+    minor_breaks = NULL
+  ) +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  
+  theme_light() +             # Use a simpler theme.
+  labs(                       # Make the titles nice.
+    x = "Valence",
+    y = "Energy",
+    colour = element_blank()
+  ) +
+  theme( 
+  axis.text = element_text(size = rel(0.95)), 
+  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
+  strip.text = element_text(size = 12),
+  plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5), 
+  legend.key = element_rect(fill = "#e7e7e4"),
+  legend.position = "none"
+) + 
+  annotate("text", x = 0.1, y = 0.05, 
+           label = "Sad" , color="black", alpha = 0.7, fontface="bold") + 
+  annotate("text", x = 0.1, y = 0.95, 
+           label = "Angry" , color="black", alpha = 0.7, fontface="bold") +
+  annotate("text", x = 0.9, y = 0.05, 
+           label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
+  annotate("text", x = 0.9, y = 0.95, 
+           label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
+  ggtitle("The mood of the songs in the different wrapped playlists") +
+    geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
+  geom_vline(xintercept = 0.5, linetype="dashed", 
+                color = "orange")
+
+scatterplotyears
+```
+
+****
 
 To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018.  
 
@@ -131,7 +201,8 @@ scatterplotyears <- combined %>%
   strip.text = element_text(size = 12),
   plot.title = element_text(size=12, 
     margin = margin(10, 0, 10, 0), hjust = 0.5), 
-  legend.key = element_rect(fill = "#e7e7e4")
+  legend.key = element_rect(fill = "#e7e7e4"),
+  legend.position = "none"
 ) + 
   annotate("text", x = 0.1, y = 0.05, 
            label = "Sad" , color="black", alpha = 0.7, fontface="bold") + 
