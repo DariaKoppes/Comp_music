@@ -52,7 +52,7 @@ billie <-
 
 #### plot 1
 
-```{r}
+```{r, fig.align='center'}
 histogram <- combined %>%
   ggplot(aes(x = energy, y=..density..)) +
   geom_histogram(binwidth = 0.1, col="grey", fill = "#0088cc") +
@@ -85,13 +85,12 @@ histogram <- combined %>%
 histogram
 ```
 
-****
+> To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
 
-hoi
 
 #### plot 2
 
-```{r, echo=FALSE}
+```{r, fig.align='center', fig.width=7}
 scatterplotyears <- combined %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -105,7 +104,7 @@ scatterplotyears <- combined %>%
   ) +
   geom_point(size = 2) +              # Scatter plot.   
   
-  facet_wrap(~category) +     # Separate charts per playlist.
+  facet_grid(.~category) +     # Separate charts per playlist.
   scale_x_continuous(         # Fine-tune the x axis.
     limits = c(0, 1),
     breaks = c(0, 0.5, 1),   # Use grid-lines for quadrants only.
@@ -152,9 +151,9 @@ scatterplotyears <- combined %>%
 scatterplotyears
 ```
 
-****
+***
 
-To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018.  
+An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
 
 
 ### A scatterplot with the energy on the y axis and valence on the x so the mood of the songs can be compared. 
