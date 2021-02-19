@@ -7,7 +7,8 @@ output:
     storyboard: true
     theme: cosmo
 ---
-### Introduction
+
+### Introduction of the chosen corpus
 
 PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
 
@@ -48,9 +49,9 @@ billie <-
 
 ```
 
-### Week 2: The first visualisations 
+### How much is my music of 2018, 2019 and 2020 alike in mood? 
 
-#### plot 1
+#### Energy of songs compared
 
 ```{r, fig.align='center'}
 histogram <- combined %>%
@@ -88,7 +89,7 @@ histogram
 > To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
 
 
-#### plot 2
+#### The mood of the songs compared
 
 ```{r, fig.align='center', fig.width=7}
 scatterplotyears <- combined %>%
@@ -151,81 +152,13 @@ scatterplotyears <- combined %>%
 scatterplotyears
 ```
 
-***
 
-An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
+> An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
 
 
-### A scatterplot with the energy on the y axis and valence on the x so the mood of the songs can be compared. 
+### In depth visualisation of the influence of Billie Eilish
 
-```{r, echo=FALSE}
-scatterplotyears <- combined %>%
-  mutate(
-    mode = ifelse(mode == 0, "Minor", "Major")
-  ) %>%
-  ggplot(                     # Set up the plot.
-    aes(
-      x = valence,
-      y = energy,
-      colour = mode
-    )
-  ) +
-  geom_point(size = 2) +              # Scatter plot.   
-  
-  facet_wrap(~category) +     # Separate charts per playlist.
-  scale_x_continuous(         # Fine-tune the x axis.
-    limits = c(0, 1),
-    breaks = c(0, 0.5, 1),   # Use grid-lines for quadrants only.
-    minor_breaks = NULL       # Remove 'minor' grid-lines.
-  ) +
-  scale_y_continuous(         # Fine-tune the y axis in the same way.
-    limits = c(0, 1),
-    breaks = c(0, 0.5, 1),
-    minor_breaks = NULL
-  ) +
-  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
-  ) +
-  
-  theme_light() +             # Use a simpler theme.
-  labs(                       # Make the titles nice.
-    x = "Valence",
-    y = "Energy",
-    colour = element_blank()
-  ) +
-  theme( 
-  axis.text = element_text(size = rel(0.95)), 
-  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
-    margin = margin(10, 0, 10, 0), hjust = 0.5), 
-  legend.key = element_rect(fill = "#e7e7e4"),
-  legend.position = "none"
-) + 
-  annotate("text", x = 0.1, y = 0.05, 
-           label = "Sad" , color="black", alpha = 0.7, fontface="bold") + 
-  annotate("text", x = 0.1, y = 0.95, 
-           label = "Angry" , color="black", alpha = 0.7, fontface="bold") +
-  annotate("text", x = 0.9, y = 0.05, 
-           label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
-  annotate("text", x = 0.9, y = 0.95, 
-           label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
-  ggtitle("The mood of the songs in the different wrapped playlists") +
-    geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
-  geom_vline(xintercept = 0.5, linetype="dashed", 
-                color = "orange")
-
-scatterplotyears
-```
-
-***
-
-An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
-
-### In depth visualisation of Billie Eilish
-
-```{r}
+```{r, fig.width = 4}
 scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -237,7 +170,7 @@ scatterplotbillie <- billie %>%
       colour = mode
     )
   ) +
-  geom_point(size = 2) +              # Scatter plot.   
+  geom_point(size = 1) +              # Scatter plot.   
   
   facet_wrap(~category) +     # Separate charts per playlist.
   scale_x_continuous(         # Fine-tune the x axis.
@@ -254,19 +187,19 @@ scatterplotbillie <- billie %>%
     type = "qual",            # Qualitative set.
     palette = "Paired"        # Name of the palette is 'Paired'.
   ) +
-  
-  theme_light() +             # Use a simpler theme.
-  labs(                       # Make the titles nice.
+  labs(
     x = "Valence",
     y = "Energy",
-    colour = element_blank()
+    color = element_blank()
   ) +
+  
+  theme_light() +             # Use a simpler theme.
+  
   theme( 
-  axis.text = element_text(size = rel(0.95)), 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
-    margin = margin(10, 0, 10, 0), hjust = 0.5), 
+  strip.text = element_text(size=10),
+  plot.title = element_text(size=10, margin = margin(25, 0, 25, 0), 
+  hjust = 0.5), 
   legend.key = element_rect(fill = "#e7e7e4")
 ) + 
   annotate("text", x = 0.1, y = 0.05, 
@@ -282,9 +215,12 @@ scatterplotbillie <- billie %>%
   geom_vline(xintercept = 0.5, linetype="dashed", 
                 color = "orange")
 
-ggplotly(scatterplotbillie)
+fig <- ggplotly(scatterplotbillie)
+
+fig
+
 ```
 
 *** 
 
-I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her. That is shown in the scatter plot below. As expected most of her songs fall under the category 'sad'. 
+I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her in this list. As expected most of her songs fall under the category 'sad'. Because she had a significant amount of numbers in the 2019 wrapped playlist, this can also account for the more low energy songs in this playlist relative to 2020 and 2018. 
