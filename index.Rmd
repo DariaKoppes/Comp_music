@@ -53,7 +53,7 @@ billie <-
 
 #### Energy of songs compared
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.width=6}
 histogram <- combined %>%
   ggplot(aes(x = energy, y=..density..)) +
   geom_histogram(binwidth = 0.1, col="grey", fill = "#0088cc") +
@@ -83,7 +83,7 @@ histogram <- combined %>%
   ) +
     ggtitle("The density of songs filtered by energy over the years") 
 
-histogram
+ggplotly(histogram)
 ```
 
 > To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
@@ -134,7 +134,6 @@ scatterplotyears <- combined %>%
   plot.title = element_text(size=12, 
     margin = margin(10, 0, 10, 0), hjust = 0.5), 
   legend.key = element_rect(fill = "#e7e7e4"),
-  legend.position = "none"
 ) + 
   annotate("text", x = 0.1, y = 0.05, 
            label = "Sad" , color="black", alpha = 0.7, fontface="bold") + 
@@ -154,11 +153,12 @@ scatterplotyears
 
 
 > An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
+Just a reminder the dark blue minor dots mean the song sounds more dark or gloomy and the light blue major dots mean the song sounds more bright or happy. Also interesting to see is that in the sad category of low energy and low valence a lot of songs have a major mode which should make them sound more bright or happy. This is a contradictory find. 
 
 
 ### In depth visualisation of the influence of Billie Eilish
 
-```{r, fig.width = 4}
+```{r, fig.width = 11}
 scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -170,7 +170,7 @@ scatterplotbillie <- billie %>%
       colour = mode
     )
   ) +
-  geom_point(size = 1) +              # Scatter plot.   
+  geom_point(size = 2) +              # Scatter plot.   
   
   facet_wrap(~category) +     # Separate charts per playlist.
   scale_x_continuous(         # Fine-tune the x axis.
@@ -197,8 +197,8 @@ scatterplotbillie <- billie %>%
   
   theme( 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size=10),
-  plot.title = element_text(size=10, margin = margin(25, 0, 25, 0), 
+  strip.text = element_text(size=12),
+  plot.title = element_text(size=14, margin = margin(10, 0, 10, 0), 
   hjust = 0.5), 
   legend.key = element_rect(fill = "#e7e7e4")
 ) + 
@@ -215,12 +215,76 @@ scatterplotbillie <- billie %>%
   geom_vline(xintercept = 0.5, linetype="dashed", 
                 color = "orange")
 
-fig <- ggplotly(scatterplotbillie)
-
-fig
+scatterplotbillie
 
 ```
 
 *** 
 
-I also wanted to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her in this list. As expected most of her songs fall under the category 'sad'. Because she had a significant amount of numbers in the 2019 wrapped playlist, this can also account for the more low energy songs in this playlist relative to 2020 and 2018. 
+I also want to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her in this list. As expected most of her songs fall under the category 'sad'. Because she had a significant amount of numbers in the 2019 wrapped playlist, this can also account for the more low energy songs in this playlist relative to 2020 and 2018. 
+
+
+### The most calm song out of all the different playlists chromogram: Fica tudo bem
+
+```{r}
+fica <-
+  get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+```
+
+```{r, fig.width=11}
+fica %>%
+  mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+***
+The chromagram of 'Fica Tudo Bem' looks very regular with the time intervals being the same between the different notes played. Maybe this causes the song to sound extra calm. The most used keys are: C, D#/Eb and F. A comparison with the most angry song chromagram is made in the next storyboard. 
+
+
+### The most angry song out of the playlists chromogram: Like i do
+
+```{r}
+ido <-
+  get_tidy_audio_analysis("6RnkFd8Fqqgk1Uni8RgqCQ") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+```
+
+```{r, fig.width=11}
+ido %>%
+  mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+***
+The chromogram of 'Like I do' looks a lot less regular than the one of the calm song. The notes have different magnitude ranges at different time intervals. For example the first 50 seconds D#/Eb is played frequently than 50 seconds not anymore and after 100 seconds it comes back again in magnitude. The most used keys are: C, G#/Ab and G. 
