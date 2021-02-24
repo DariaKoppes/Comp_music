@@ -93,7 +93,7 @@ To start looking at the differences in music throughout the year and focussing o
 
 #### 
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.width=9}
 scatterplotyears <- combined %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
