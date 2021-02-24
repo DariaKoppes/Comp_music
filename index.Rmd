@@ -53,10 +53,10 @@ billie <-
 
 #### Energy of songs compared
 
-```{r, fig.align='center', fig.width=6}
+```{r, fig.align='center'}
 histogram <- combined %>%
   ggplot(aes(x = energy, y=..density..)) +
-  geom_histogram(binwidth = 0.1, col="grey", fill = "#0088cc") +
+  geom_histogram(binwidth = 0.1, col="black", fill = "#0088cc") +
   geom_density() +
   facet_wrap(~category) +
   scale_colour_brewer(        # Use the Color Brewer to choose a palette.
@@ -86,12 +86,14 @@ histogram <- combined %>%
 ggplotly(histogram)
 ```
 
-> To start looking at the differences in music throughout the year and focussing on the mood of the songs i started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As i said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year i did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
+****
+
+To start looking at the differences in music throughout the year and focussing on the mood of the songs I started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As I said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year I did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
 
 
-#### The mood of the songs compared
+#### 
 
-```{r, fig.align='center', fig.width=7}
+```{r, fig.align='center'}
 scatterplotyears <- combined %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -152,13 +154,15 @@ scatterplotyears
 ```
 
 
-> An interesting find already is that there are not much calm songs in my Wrapped playlists, although i even have a separate playlist called 'calm' where i listen to all the time. Maybe my perception of calm song is different than that of spotify. 
+**** 
+
+An interesting find already is that there are not much calm songs in my Wrapped playlists, although I even have a separate playlist called 'calm' where I listen to all the time. Maybe my perception of calm songs is different than that of spotify. 
 Just a reminder the dark blue minor dots mean the song sounds more dark or gloomy and the light blue major dots mean the song sounds more bright or happy. Also interesting to see is that in the sad category of low energy and low valence a lot of songs have a major mode which should make them sound more bright or happy. This is a contradictory find. 
 
 
 ### In depth visualisation of the influence of Billie Eilish
 
-```{r, fig.width = 11}
+```{r}
 scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -235,7 +239,7 @@ fica <-
 
 ```
 
-```{r, fig.width=11}
+```{r}
 fica %>%
   mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
   compmus_gather_chroma() %>% 
@@ -268,7 +272,7 @@ ido <-
   select(start, duration, pitches)
 ```
 
-```{r, fig.width=11}
+```{r}
 ido %>%
   mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
   compmus_gather_chroma() %>% 
