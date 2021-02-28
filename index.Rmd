@@ -17,7 +17,7 @@ library(compmus)
 
 ### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
 
-```{r, fig.width=9}
+```{r, fig.width=8}
 polen <-
   get_tidy_audio_analysis("5hYQAKnuCccdHmp0zCjLlE") %>%
   compmus_align(bars, segments) %>%
