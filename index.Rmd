@@ -8,22 +8,139 @@ output:
     theme: cosmo
 ---
 
-### Introduction of the chosen corpus
-
-PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
-
-The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music i listened too has evolved over the last three years. Did it change much or did it stay the same? Can you tell looking at the kind of music I was listening to what kind of year I generally had. 2019 for example was a good year for me and 2020 a more harder year, is that reflected in the music? 
-
-Comparison points would be artists and features of the songs like valence and energy. I expect some artists to come back each year because I have been listening to them for a while now, e.g Imagine Dragons. Also when I travel I tend to be listening to more foreign music, so I expect 2018 and 2019 to have more Spanish/Portuguese/French artists in them than 2020 for example. I’m unsure if my type of music has significantly changed over the past three years but I am curious to look into it. 
-
-The strength of the corpus is that it contains a significant amount of representative songs and especially for 2019 and 2020 I recognize all the numbers in it. In 2019 I was also pretty obsessed with Billie Eilish so it is typical to see that 20 of the 100 songs in my wrapped playlist are by her. For 2018 however I notice that some songs in the wrapped playlist I have never listened to. I do not know how they got in my wrapped playlist. For example: Pastempomat sang by Dawid Pdsiadlo is a polish song and I am certain that I never listened to this song or any other polish song. I will keep these songs in the playlist to have the same number of songs in every playlist. 
-
 ```{r, echo=FALSE}
 library(tidyverse)
 library(spotifyr)
 library(plotly)
 library(compmus)
 ```
+
+### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
+
+```{r, fig.width=9}
+polen <-
+  get_tidy_audio_analysis("5hYQAKnuCccdHmp0zCjLlE") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  polen %>%
+    compmus_self_similarity(pitches, "aitchison") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  polen %>%
+    compmus_self_similarity(timbre, "euclidean") %>%
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "seconds", y = "") +
+  theme(
+    strip.text = element_text(size = 14)
+  )
+
+```
+
+
+*** 
+
+Pastempomat was one of the songs in the 2018 wrapped playlist that I did not listen to before. That is why I want to look at the details of the song to try to understand why spotify has put the song in my wrapped 2018 playlist. 
+
+The chroma- and timbre-based self-similarity matrices show a clear structure in the song. The segments represent the bars of the song. In the chroma-based SSM especially a lot of paths are visible. In the song you can hear this as certain order of cords being repeated after each other. The first 10 seconds sound the same as the 10 seconds that follow thereafter. In the timbre-based SSM this shows a block-like structure for the first 20 seconds because of the homogeneous harmony in the sound. Both SSM show a bright vertical yellow line around 125 seconds. This is the start of the bridge where the background music stops and you just hear the singer sing. Another point where the background music stops is around 145 seconds which is again shown by bright vertical line in the timbre-based SSM but not in the chroma-based SSM. 
+
+
+### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
+
+```{r, fig.width=9}
+
+Fica <-
+  get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  Fica %>%
+    compmus_self_similarity(pitches, "aitchison") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  Fica %>%
+    compmus_self_similarity(timbre, "euclidean") %>%
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")+
+  theme(
+    strip.text = element_text(size = 14)
+  )
+
+```
+
+***
+
+Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
+
+### **Introduction** of the chosen corpus
+
+PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
+
+The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music I listened too has evolved over the last three years. Another research point is to find out if it is possible looking at the kind of music I was listening to, to decide the general mood of that year for me. 2019 for example was a nice year for me with a lot of traveling and fun things planned, 2020 on the other hand was a more harder year like for most people. Is this reflected in the music of my wrapped spotify playlists? 
+
+Comparison points would be artists and features of the songs like valence and energy. I expect some artists to come back each year because I have been listening to them for a while now, e.g Imagine Dragons. Also when I travel I tend to be listening to more foreign music, so I expect 2018 and 2019 to have more Spanish/Portuguese/French artists in them than 2020 for example. I am unsure if my type of music has significantly changed over the past three years but I am curious to look into it. 
+
+The strength of the corpus is that it contains a significant amount of representative songs and especially for 2019 and 2020 I recognize all the numbers in it. In 2019 I was also pretty obsessed with Billie Eilish so it is typical to see that 20 of the 100 songs in my wrapped playlist are by her. For 2018 however I notice that some songs in the wrapped playlist I have never listened to before. I do not know how they got in my wrapped playlist. For example: Pastempomat sang by Dawid Pdsiadlo is a polish song and I am certain that I never listened to this song or any other polish song before. I will keep these songs in the playlist to have the same number of songs in every playlist, but remember that there are some songs in the 2018 wrapped playlist that are not representable for me. 
 
 
 ```{r, echo=FALSE}
@@ -49,7 +166,7 @@ billie <-
 
 ```
 
-### How much is my music of 2018, 2019 and 2020 alike in mood? 
+### How much is my music of 2018, 2019 and 2020 alike in **mood**? 
 
 #### Energy of songs compared
 
@@ -160,9 +277,9 @@ An interesting find already is that there are not much calm songs in my Wrapped 
 Just a reminder the dark blue minor dots mean the song sounds more dark or gloomy and the light blue major dots mean the song sounds more bright or happy. Also interesting to see is that in the sad category of low energy and low valence a lot of songs have a major mode which should make them sound more bright or happy. This is a contradictory find. 
 
 
-### In depth visualisation of the influence of Billie Eilish
+### In depth visualisation of the influence of **Billie Eilish**
 
-```{r}
+```{r, fig.width=9}
 scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -228,7 +345,7 @@ scatterplotbillie
 I also want to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her in this list. As expected most of her songs fall under the category 'sad'. Because she had a significant amount of numbers in the 2019 wrapped playlist, this can also account for the more low energy songs in this playlist relative to 2020 and 2018. 
 
 
-### The most calm song out of all the different playlists chromogram: Fica tudo bem
+### The most calm song out of all the different playlists chromogram: **Fica tudo bem**
 
 ```{r}
 fica <-
@@ -239,7 +356,7 @@ fica <-
 
 ```
 
-```{r}
+```{r, fig.width=8}
 fica %>%
   mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
   compmus_gather_chroma() %>% 
@@ -262,7 +379,7 @@ fica %>%
 The chromagram of 'Fica Tudo Bem' looks very regular with the time intervals being the same between the different notes played. Maybe this causes the song to sound extra calm. The most used keys are: C, D#/Eb and F. A comparison with the most angry song chromagram is made in the next storyboard. 
 
 
-### The most angry song out of the playlists chromogram: Like i do
+### The most angry song out of the playlists chromogram: **Like i do**
 
 ```{r}
 ido <-
@@ -272,7 +389,7 @@ ido <-
   select(start, duration, pitches)
 ```
 
-```{r}
+```{r, fig.width=8}
 ido %>%
   mutate(pitches = map(pitches, compmus_normalise, "manhattan")) %>%
   compmus_gather_chroma() %>% 

@@ -16,8 +16,8 @@ library(compmus)
 
 combined %>%
   summarise(
-    mean_speechiness = mean(speechiness),
-    mean_acousticness = mean(acousticness),
+    mean_energy = mean(energy),
+    mean_valence = mean(valence),
     mean_liveness = mean(liveness),
     sd_speechiness = sd(speechiness),
     sd_acousticness = sd(acousticness),
@@ -32,8 +32,6 @@ combined %>%
 ```
 
 ```{r}
-sixteen <- get_playlist_audio_features("", "37i9dQZF1CyQSI4FeH8uRR")
-seventeen <- get_playlist_audio_features("", "37i9dQZF1E9YeRFOdYZT1f")
 eighteen <- get_playlist_audio_features("", "37i9dQZF1EjuRTGXCnqj3q")
 nineteen <- get_playlist_audio_features("", "37i9dQZF1Ethn3c8yyjsG9")
 twenty <- get_playlist_audio_features("", "37i9dQZF1EM1eb9t3OIKaB")
@@ -43,11 +41,7 @@ billie <- get_playlist_audio_features("", "7L8fVkNZIHQ38k0hkcJkVo")
 ```{r}
 combined <-
   bind_rows(
-    sixteen %>% mutate(category = "Wrapped playlist 2016"),
-    seventeen %>% mutate(category = "Wrapped playlist 2017"),
-    eighteen %>% mutate(category = "Wrapped playlist 2018"),
-    nineteen %>% mutate(category = "Wrapped playlist 2019"),
-    twenty %>% mutate(category = "Wrapped playlist 2020")
+    eighteen %>% mutate(category = "Wrapped playlist 2018")
   )
 
 billie <-
