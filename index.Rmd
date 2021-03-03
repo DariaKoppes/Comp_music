@@ -27,7 +27,7 @@ polen <-
     pitches =
       map(segments,
         compmus_summarise, pitches,
-        method = "acentre", norm = "manhattan"
+        method = "mean", norm = "manhattan"
       )
   ) %>%
   mutate(
@@ -58,7 +58,7 @@ bind_rows(
   geom_tile() +
   coord_fixed() +
   facet_wrap(~type) +
-  scale_fill_viridis_c(guide = "none") +
+  scale_fill_viridis_c(guide = "none", option = "cividis") +
   theme_classic() +
   labs(x = "seconds", y = "") +
   theme(
@@ -77,7 +77,7 @@ The chroma- and timbre-based self-similarity matrices show a clear structure in 
 
 ### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
 
-```{r, fig.width=9}
+```{r, fig.width=8}
 
 Fica <-
   get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
@@ -88,7 +88,7 @@ Fica <-
     pitches =
       map(segments,
         compmus_summarise, pitches,
-        method = "acentre", norm = "manhattan"
+        method = "mean", norm = "manhattan"
       )
   ) %>%
   mutate(
@@ -103,7 +103,7 @@ bind_rows(
     compmus_self_similarity(pitches, "aitchison") %>%
     mutate(d = d / max(d), type = "Chroma"),
   Fica %>%
-    compmus_self_similarity(timbre, "euclidean") %>%
+    compmus_self_similarity(timbre, "cosine") %>%
     mutate(d = d / max(d), type = "Timbre")
 ) %>%
   mutate() %>%
@@ -119,7 +119,7 @@ bind_rows(
   geom_tile() +
   coord_fixed() +
   facet_wrap(~type) +
-  scale_fill_viridis_c(guide = "none") +
+  scale_fill_viridis_c(guide = "none", option = "cividis") +
   theme_classic() +
   labs(x = "", y = "")+
   theme(
@@ -200,7 +200,7 @@ histogram <- combined %>%
   ) +
     ggtitle("The density of songs filtered by energy over the years") 
 
-ggplotly(histogram)
+histogram
 ```
 
 ****
@@ -279,7 +279,9 @@ Just a reminder the dark blue minor dots mean the song sounds more dark or gloom
 
 ### In depth visualisation of the influence of **Billie Eilish**
 
-```{r, fig.width=9}
+#### Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019
+
+```{r, fig.width=9, warning=FALSE}
 scatterplotbillie <- billie %>%
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -288,10 +290,10 @@ scatterplotbillie <- billie %>%
     aes(
       x = valence,
       y = energy,
-      colour = mode
+      label = track.name
     )
   ) +
-  geom_point(size = 2) +              # Scatter plot.   
+  geom_point(size = 1.5, color = '#008ae6', alpha = 0.6) +              # Scatter plot.   
   
   facet_wrap(~category) +     # Separate charts per playlist.
   scale_x_continuous(         # Fine-tune the x axis.
@@ -317,10 +319,7 @@ scatterplotbillie <- billie %>%
   theme_light() +             # Use a simpler theme.
   
   theme( 
-  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size=12),
-  plot.title = element_text(size=14, margin = margin(10, 0, 10, 0), 
-  hjust = 0.5), 
+  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"), 
   legend.key = element_rect(fill = "#e7e7e4")
 ) + 
   annotate("text", x = 0.1, y = 0.05, 
@@ -331,12 +330,11 @@ scatterplotbillie <- billie %>%
            label = "Calm" , color="black",alpha = 0.7, fontface="bold") + 
   annotate("text", x = 0.9, y = 0.95, 
            label = "Happy" , color="black", alpha = 0.7, fontface="bold") +
-  ggtitle("Comparing the mood of Billie Eilish with the mood of playlist wrapped 2019") +
   geom_hline(yintercept=0.5, linetype="dashed", color = "orange") +
   geom_vline(xintercept = 0.5, linetype="dashed", 
                 color = "orange")
 
-scatterplotbillie
+ggplotly(scatterplotbillie)
 
 ```
 
