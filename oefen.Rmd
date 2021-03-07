@@ -533,7 +533,7 @@ jazz %>%
 ```{r}
 jazz %>%
   mutate(
-    pitches =
+    timbre =
       map(
         segments,
         compmus_summarise,
@@ -541,8 +541,8 @@ jazz %>%
         method = "mean"
       )
   ) %>%
-  select(genre, pitches) %>%
-  compmus_gather_chroma() %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
   ggplot(aes(x = basis, y = value, fill = genre)) +
   geom_violin() +
   scale_fill_viridis_d() +

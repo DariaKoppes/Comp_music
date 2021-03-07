@@ -15,122 +15,190 @@ library(plotly)
 library(compmus)
 ```
 
-### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
+### How well can spotify analyse the tonality of the outliers of the corpus?: **Fica tudo bem**
 
-```{r, fig.width=8}
-polen <-
-  get_tidy_audio_analysis("5hYQAKnuCccdHmp0zCjLlE") %>%
-  compmus_align(bars, segments) %>%
-  select(bars) %>%
-  unnest(bars) %>%
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"
-      )
-  ) %>%
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "mean"
-      )
+```{r}
+circshift <- function(v, n) {
+  if (n == 0) v else c(tail(v, n), head(v, -n))
+}
+
+#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+major_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+minor_chord <-
+  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+seventh_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+
+major_key <-
+  c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
+minor_key <-
+  c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+
+chord_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:7", circshift(seventh_chord, 6),
+    "Gb:maj", circshift(major_chord, 6),
+    "Bb:min", circshift(minor_chord, 10),
+    "Db:maj", circshift(major_chord, 1),
+    "F:min", circshift(minor_chord, 5),
+    "Ab:7", circshift(seventh_chord, 8),
+    "Ab:maj", circshift(major_chord, 8),
+    "C:min", circshift(minor_chord, 0),
+    "Eb:7", circshift(seventh_chord, 3),
+    "Eb:maj", circshift(major_chord, 3),
+    "G:min", circshift(minor_chord, 7),
+    "Bb:7", circshift(seventh_chord, 10),
+    "Bb:maj", circshift(major_chord, 10),
+    "D:min", circshift(minor_chord, 2),
+    "F:7", circshift(seventh_chord, 5),
+    "F:maj", circshift(major_chord, 5),
+    "A:min", circshift(minor_chord, 9),
+    "C:7", circshift(seventh_chord, 0),
+    "C:maj", circshift(major_chord, 0),
+    "E:min", circshift(minor_chord, 4),
+    "G:7", circshift(seventh_chord, 7),
+    "G:maj", circshift(major_chord, 7),
+    "B:min", circshift(minor_chord, 11),
+    "D:7", circshift(seventh_chord, 2),
+    "D:maj", circshift(major_chord, 2),
+    "F#:min", circshift(minor_chord, 6),
+    "A:7", circshift(seventh_chord, 9),
+    "A:maj", circshift(major_chord, 9),
+    "C#:min", circshift(minor_chord, 1),
+    "E:7", circshift(seventh_chord, 4),
+    "E:maj", circshift(major_chord, 4),
+    "G#:min", circshift(minor_chord, 8),
+    "B:7", circshift(seventh_chord, 11),
+    "B:maj", circshift(major_chord, 11),
+    "D#:min", circshift(minor_chord, 3)
   )
-bind_rows(
-  polen %>%
-    compmus_self_similarity(pitches, "aitchison") %>%
-    mutate(d = d / max(d), type = "Chroma"),
-  polen %>%
-    compmus_self_similarity(timbre, "euclidean") %>%
-    mutate(d = d / max(d), type = "Timbre")
-) %>%
-  mutate() %>%
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  facet_wrap(~type) +
-  scale_fill_viridis_c(guide = "none", option = "cividis") +
-  theme_classic() +
-  labs(x = "seconds", y = "") +
-  theme(
-    strip.text = element_text(size = 14)
+
+key_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:maj", circshift(major_key, 6),
+    "Bb:min", circshift(minor_key, 10),
+    "Db:maj", circshift(major_key, 1),
+    "F:min", circshift(minor_key, 5),
+    "Ab:maj", circshift(major_key, 8),
+    "C:min", circshift(minor_key, 0),
+    "Eb:maj", circshift(major_key, 3),
+    "G:min", circshift(minor_key, 7),
+    "Bb:maj", circshift(major_key, 10),
+    "D:min", circshift(minor_key, 2),
+    "F:maj", circshift(major_key, 5),
+    "A:min", circshift(minor_key, 9),
+    "C:maj", circshift(major_key, 0),
+    "E:min", circshift(minor_key, 4),
+    "G:maj", circshift(major_key, 7),
+    "B:min", circshift(minor_key, 11),
+    "D:maj", circshift(major_key, 2),
+    "F#:min", circshift(minor_key, 6),
+    "A:maj", circshift(major_key, 9),
+    "C#:min", circshift(minor_key, 1),
+    "E:maj", circshift(major_key, 4),
+    "G#:min", circshift(minor_key, 8),
+    "B:maj", circshift(major_key, 11),
+    "D#:min", circshift(minor_key, 3)
   )
 
 ```
-
-
-*** 
-
-Pastempomat was one of the songs in the 2018 wrapped playlist that I did not listen to before. That is why I want to look at the details of the song to try to understand why spotify has put the song in my wrapped 2018 playlist. 
-
-The chroma- and timbre-based self-similarity matrices show a clear structure in the song. The segments represent the bars of the song. In the chroma-based SSM especially a lot of paths are visible. In the song you can hear this as certain order of cords being repeated after each other. The first 10 seconds sound the same as the 10 seconds that follow thereafter. In the timbre-based SSM this shows a block-like structure for the first 20 seconds because of the homogeneous harmony in the sound. Both SSM show a bright vertical yellow line around 125 seconds. This is the start of the bridge where the background music stops and you just hear the singer sing. Another point where the background music stops is around 145 seconds which is again shown by bright vertical line in the timbre-based SSM but not in the chroma-based SSM. 
-
-
-### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
-
-```{r, fig.width=8}
-
-Fica <-
+```{r}
+tudo <-
   get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
-  compmus_align(bars, segments) %>%
-  select(bars) %>%
-  unnest(bars) %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
   mutate(
     pitches =
       map(segments,
         compmus_summarise, pitches,
         method = "mean", norm = "manhattan"
       )
-  ) %>%
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "mean"
-      )
   )
-bind_rows(
-  Fica %>%
-    compmus_self_similarity(pitches, "aitchison") %>%
-    mutate(d = d / max(d), type = "Chroma"),
-  Fica %>%
-    compmus_self_similarity(timbre, "cosine") %>%
-    mutate(d = d / max(d), type = "Timbre")
-) %>%
-  mutate() %>%
+```
+
+```{r}
+tudo %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if desired
+    method = "angular",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
   ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
   ) +
   geom_tile() +
-  coord_fixed() +
-  facet_wrap(~type) +
   scale_fill_viridis_c(guide = "none", option = "cividis") +
-  theme_classic() +
-  labs(x = "", y = "")+
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
   theme(
-    strip.text = element_text(size = 14)
-  )
-
+    plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  )+
+  ggtitle("Keygram Fica tudo bem")
 ```
 
 ***
 
-Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
+On the left you can see another analysis of the most calm song out of the corpus: Fica tudo bem. The song is divided into sections and for each section Spotify estimated the key. The key is estimated by computing the distance of the Spotify chroma vectors to the Krumhansl-Kessler key profiles. 
+
+As one can see right away is that the key estimates are very blurry. A clear key estimate would show one key having a dark blue color block and the others a more brighter for example yellow color. In this key gram a lot of keys have a darker blue color and thus it is not clear how the tonality in the song changes. 
+
+A final observation in the keygram are the vertical yellow parts, first one being seen between 50 and 65 seconds. In the song these sections are the parts where just instrumentals are playing and where the key-finding algorithm has the most trouble finding an estimate for the key of that section. 
+
+
+### How well can spotify analyse the tonality of the outliers of the corpus?: **Like I do**
+
+```{r}
+like <-
+  get_tidy_audio_analysis("6RnkFd8Fqqgk1Uni8RgqCQ") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+```
+
+```{r}
+like %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if desired
+    method = "angular",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none", option = "cividis") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  theme(
+    plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  )+
+  ggtitle("Keygram Like I do")
+```
+
+*** 
+
+On the left you can see another analysis of the most angry song out of the corpus: Like I do. Just like for the song: Fica tudo bem, this song is divided into sections and for each section Spotify estimated the key. The key is estimated by computing the distance of the Spotify chroma vectors to the Krumhansl-Kessler key profiles. 
+
+A slighty better estimate of keys is made in this keygram compared to the previous one. It is clear that the song starts out in the key C minor. And around 130 to 140 seconds the key is a Ab major or a F minor. Looking back at the chromagram of Like I do one could also see a bigger magnitude for the Ab pitch around this time in the song compared to the other pitches. 
+
+But for most of the song the key estimates are very blurry and not clear. Especially in the refrain parts of the song at around 45-95s and 145-190s. 
+
+After looking at the two keygrams it can be concluded that Spotify has trouble analysing the tonality of the outliers in my corpus. 
+
 
 ### **Introduction** of the chosen corpus
 
@@ -144,8 +212,8 @@ The strength of the corpus is that it contains a significant amount of represent
 
 
 ```{r, echo=FALSE}
-eighteen <- get_playlist_audio_features("", "37i9dQZF1EjuRTGXCnqj3q")
-nineteen <- get_playlist_audio_features("", "37i9dQZF1Ethn3c8yyjsG9")
+eighteen <- get_playlist_audio_features("", "37i9dQZF1EjuRTGXCnqj3q") 
+nineteen <- get_playlist_audio_features("", "37i9dQZF1Ethn3c8yyjsG9") 
 twenty <- get_playlist_audio_features("", "37i9dQZF1EM1eb9t3OIKaB")
 billie <- get_playlist_audio_features("", "7L8fVkNZIHQ38k0hkcJkVo")
 ```
@@ -165,6 +233,7 @@ billie <-
   )
 
 ```
+
 
 ### How much is my music of 2018, 2019 and 2020 alike in **mood**? 
 
@@ -377,7 +446,7 @@ fica %>%
 The chromagram of 'Fica Tudo Bem' looks very regular with the time intervals being the same between the different notes played. Maybe this causes the song to sound extra calm. The most used keys are: C, D#/Eb and F. A comparison with the most angry song chromagram is made in the next storyboard. 
 
 
-### The most angry song out of the playlists chromogram: **Like i do**
+### The most angry song out of the playlists chromogram: **Like I do**
 
 ```{r}
 ido <-
@@ -407,3 +476,120 @@ ido %>%
 
 ***
 The chromogram of 'Like I do' looks a lot less regular than the one of the calm song. The notes have different magnitude ranges at different time intervals. For example the first 50 seconds D#/Eb is played frequently than 50 seconds not anymore and after 100 seconds it comes back again in magnitude. The most used keys are: C, G#/Ab and G. 
+
+### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
+
+```{r, fig.width=8}
+polen <-
+  get_tidy_audio_analysis("5hYQAKnuCccdHmp0zCjLlE") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  polen %>%
+    compmus_self_similarity(pitches, "aitchison") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  polen %>%
+    compmus_self_similarity(timbre, "euclidean") %>%
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none", option = "cividis") +
+  theme_classic() +
+  labs(x = "seconds", y = "") +
+  theme(
+    strip.text = element_text(size = 14)
+  )
+
+```
+
+
+*** 
+
+Pastempomat was one of the songs in the 2018 wrapped playlist that I did not listen to before. That is why I want to look at the details of the song to try to understand why spotify has put the song in my wrapped 2018 playlist. 
+
+The chroma- and timbre-based self-similarity matrices show a clear structure in the song. The segments represent the bars of the song. In the chroma-based SSM especially a lot of paths are visible. In the song you can hear this as certain order of cords being repeated after each other. The first 10 seconds sound the same as the 10 seconds that follow thereafter. In the timbre-based SSM this shows a block-like structure for the first 20 seconds because of the homogeneous harmony in the sound. Both SSM show a bright vertical yellow line around 125 seconds. This is the start of the bridge where the background music stops and you just hear the singer sing. Another point where the background music stops is around 145 seconds which is again shown by bright vertical line in the timbre-based SSM but not in the chroma-based SSM. 
+
+
+### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
+
+```{r, fig.width=8}
+
+Fica <-
+  get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  Fica %>%
+    compmus_self_similarity(pitches, "aitchison") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  Fica %>%
+    compmus_self_similarity(timbre, "cosine") %>%
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none", option = "cividis") +
+  theme_classic() +
+  labs(x = "", y = "")+
+  theme(
+    strip.text = element_text(size = 14)
+  )
+
+```
+
+***
+
+Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
