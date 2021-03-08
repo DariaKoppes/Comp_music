@@ -13,6 +13,8 @@ library(tidyverse)
 library(spotifyr)
 library(plotly)
 library(compmus)
+library(grid)
+library(gridExtra)
 ```
 
 ### How well can spotify analyse the tonality of the outliers of the corpus?: **Fica tudo bem**
@@ -235,15 +237,12 @@ billie <-
 ```
 
 
-### How much is my music of 2018, 2019 and 2020 alike in **mood**? 
+### Lets start by comparing the **energy** of the songs
 
-#### Energy of songs compared
-
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.width=8}
 histogram <- combined %>%
-  ggplot(aes(x = energy, y=..density..)) +
+  ggplot(aes(x = energy)) +
   geom_histogram(binwidth = 0.1, col="black", fill = "#0088cc") +
-  geom_density() +
   facet_wrap(~category) +
   scale_colour_brewer(        # Use the Color Brewer to choose a palette.
     type = "qual",            # Qualitative set.
@@ -264,20 +263,45 @@ histogram <- combined %>%
 ) +
     labs(                      
     x = "Energy",
-    y = "Density",
+    y = "Number of songs",
     colour = element_blank()
   ) +
+    ggtitle("The energy of songs over the years") 
+
+
+density <- ggplot(combined, aes(x=energy, fill = category)) +
+  geom_density(alpha = 0.4) +
+    scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme_light() +
+  scale_x_continuous(         # Fine-tune the x axis.
+    limits = c(0, 1),
+    breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+    minor_breaks = NULL       # Remove 'minor' grid-lines.
+  ) +
+      labs(                      
+    x = "Energy",
+    y = "Density",
+    fill = element_blank()
+  ) +
+  theme(
+    plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  )+
     ggtitle("The density of songs filtered by energy over the years") 
 
-histogram
+grid.arrange(histogram, density, nrow=2)
 ```
 
-****
+
+***
 
 To start looking at the differences in music throughout the year and focussing on the mood of the songs I started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As I said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year I did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
 
 
-#### 
+### How much is my music of 2018, 2019 and 2020 alike in **mood**? 
 
 ```{r, fig.align='center', fig.width=9}
 scatterplotyears <- combined %>%
@@ -340,7 +364,7 @@ scatterplotyears
 ```
 
 
-**** 
+***
 
 An interesting find already is that there are not much calm songs in my Wrapped playlists, although I even have a separate playlist called 'calm' where I listen to all the time. Maybe my perception of calm songs is different than that of spotify. 
 Just a reminder the dark blue minor dots mean the song sounds more dark or gloomy and the light blue major dots mean the song sounds more bright or happy. Also interesting to see is that in the sad category of low energy and low valence a lot of songs have a major mode which should make them sound more bright or happy. This is a contradictory find. 
@@ -479,7 +503,7 @@ The chromogram of 'Like I do' looks a lot less regular than the one of the calm 
 
 ### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
 
-```{r, fig.width=8}
+```{r, fig.width=6}
 polen <-
   get_tidy_audio_analysis("5hYQAKnuCccdHmp0zCjLlE") %>%
   compmus_align(bars, segments) %>%
@@ -539,7 +563,7 @@ The chroma- and timbre-based self-similarity matrices show a clear structure in 
 
 ### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
 
-```{r, fig.width=8}
+```{r, fig.width=6}
 
 Fica <-
   get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv") %>%
