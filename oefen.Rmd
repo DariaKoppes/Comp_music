@@ -52,7 +52,7 @@ billie <-
 
 ```
 ```{r}
-billie %>% ggplot(aes(x = energy, y = valence, color = playlist_name)) + geom_point()
+billie %>% ggplot(aes(x = energy, y = tempo, color = playlist_name)) + geom_point()
 ```
 
 
@@ -86,6 +86,7 @@ combined %>%
   ) +
     ggtitle("The density of songs filtered by energy over the years") 
 ```
+
 ```{r}
 billie %>%
   ggplot(aes(x = category, y = tempo)) +
@@ -615,7 +616,7 @@ graveola <- get_tidy_audio_analysis("0trB3R0YBk3vGrGm5YSUTv")
 
 ```{r}
 graveola %>%
-  tempogram(window_size = 4, hop_size = 4, cyclic = FALSE) %>%
+  tempogram(window_size = 4, hop_size = 4, cyclic = TRUE) %>%
   ggplot(aes(x = time, y = bpm, fill = power)) +
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +
