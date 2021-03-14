@@ -18,11 +18,11 @@ combined %>%
   summarise(
     mean_energy = mean(energy),
     mean_valence = mean(valence),
-    mean_liveness = mean(liveness),
+    mean_tempo = mean(tempo),
     sd_speechiness = sd(speechiness),
     sd_acousticness = sd(acousticness),
-    sd_liveness = sd(liveness),
-    median_speechiness = median(speechiness),
+    sd_tempo = sd(tempo),
+    median_tempo = median(tempo),
     median_acousticness = median(acousticness),
     median_liveness = median(liveness),
     mad_speechiness = mad(speechiness),
@@ -41,7 +41,9 @@ billie <- get_playlist_audio_features("", "7L8fVkNZIHQ38k0hkcJkVo")
 ```{r}
 combined <-
   bind_rows(
-    eighteen %>% mutate(category = "Wrapped playlist 2018")
+    eighteen %>% mutate(category = "Wrapped playlist 2018"),
+    nineteen %>% mutate(category = "Wrapped playlist 2019"),
+    twenty %>% mutate(category = "Wrapped playlist 2020")
   )
 
 billie <-

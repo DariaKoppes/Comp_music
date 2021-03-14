@@ -41,7 +41,7 @@ billie <-
 
 ### What about the **tempo** of the songs, does it differ over the years? 
 
-```{r}
+```{r, fig.width=8}
 hist_tempo <- combined %>%
   ggplot(aes(x = tempo)) +
   geom_histogram(binwidth = 10, col="grey", fill = "#0088cc") +
@@ -82,10 +82,23 @@ density_tempo <- ggplot(combined, aes(x=tempo, fill = category)) +
     plot.title = element_text(size=12, 
     margin = margin(10, 0, 10, 0), hjust = 0.5)
   )+
+geom_vline(xintercept = 116, linetype="dotted", 
+                color = "black", size=1.5) +
+   geom_text(aes(x=130, label="\nmean tempo", y=0.020), colour="black", text=element_text(size=10)) +
     ggtitle("The density of songs filtered by tempo over the years") 
 
 grid.arrange(hist_tempo, density_tempo, nrow=2)
 ```
+
+***
+
+For comparing the feature tempo between the three wrapped playlists, I created three histograms, one for each year, with a corresponding density plot of the three histograms combined. 
+
+Looking at these graphs one can conclude that the wrapped playlists are similar in their tempo. The density plots for the three years overlap almost completly. Wrapped 2019 just has a slight preference for lower tempo songs where the density is the highest. This corresponds with the previous finding of Wrapped 2019 having the lowest energy songs. 
+
+The mean tempo of the three wrapped playlists is 117 beats per minute (BPM). This is close to the preferred tempo of 120 BPM proposed by the article of Moelants published in 2002 [1]. My mean preferred tempo of songs is thus the same as the one they are proposing as the natural preferred tempo. 
+
+*[1] Moelants, Dirk. 2002. ‘Preferred Tempo Reconsidered.’ In Proceedings of the 7th International Conference on Music Perception and Cognition, pp. 580–83. Adelaide, Australia*
 
 ### **Introduction** of the chosen corpus
 
