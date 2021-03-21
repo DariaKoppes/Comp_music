@@ -47,9 +47,9 @@ billie <- get_playlist_audio_features("spotify", "7L8fVkNZIHQ38k0hkcJkVo")
 ```{r, echo=FALSE}
 combined_1 <-
   bind_rows(
-    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 20),
-    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 20),
-    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 20)
+    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 50),
+    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 50),
+    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 50)
   )
 combined <-
   bind_rows(
@@ -95,21 +95,10 @@ combined_features <-
 combined_recipe <-
   recipe(
     category ~
-      danceability +
-      energy +
       loudness +
-      speechiness +
-      acousticness +
-      instrumentalness +
-      liveness +
-      valence +
-      tempo +
       duration +
-      C + `C#|Db` + D + `D#|Eb` +
-      E + `F` + `F#|Gb` + G +
-      `G#|Ab` + A + `A#|Bb` + B +
-      c01 + c02 + c03 + c04 + c05 + c06 +
-      c07 + c08 + c09 + c10 + c11 + c12,
+      energy + 
+      c02 + c03 + c04 + c11,
     data = combined_features,          # Use the same name as the previous block.
   ) %>%
   step_center(all_predictors()) %>%
@@ -118,50 +107,40 @@ combined_recipe <-
 ```
 
 ```{r}
-combined_cv <- combined_features %>% vfold_cv(5)
+combined_cv <- combined_features %>% vfold_cv(10)
 ```
 
 ```{r}
-forest_model <-
-  rand_forest() %>%
+knn_model <-
+  nearest_neighbor(neighbors = 1) %>%
   set_mode("classification") %>% 
-  set_engine("ranger", importance = "impurity")
-indie_forest <- 
+  set_engine("kknn")
+combined_knn <- 
   workflow() %>% 
   add_recipe(combined_recipe) %>% 
-  add_model(forest_model) %>% 
+  add_model(knn_model) %>% 
   fit_resamples(
     combined_cv, 
     control = control_resamples(save_pred = TRUE)
   )
 ```
-```{r}
-workflow() %>% 
-  add_recipe(combined_recipe) %>% 
-  add_model(forest_model) %>% 
-  fit(combined_features) %>% 
-  pluck("fit", "fit", "fit") %>%
-  ranger::importance() %>% 
-  enframe() %>% 
-  mutate(name = fct_reorder(name, value)) %>% 
-  ggplot(aes(name, value)) + 
-  geom_col() + 
-  coord_flip() +
-  theme_minimal() +
-  labs(x = NULL, y = "Importance")
+
+```{r, echo=FALSE, results='hide', fig.show='hide'}
+combined_knn %>% get_pr()
 ```
-```{r}
-combined_features %>%
-  ggplot(aes(x = energy, y = valence, colour = category, size = danceability)) +
-  geom_point(alpha = 0.8) +
-  scale_color_viridis_d() +
-  labs(
-    x = "Energy",
-    y = "Danceability",
-    size = "Valence",
-    colour = "Playlist"
+
+
+### Classification 
+```{r, fig.width=9}
+combined_knn %>% get_conf_mat() %>% autoplot(type = "mosaic") + scale_colour_brewer(
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
   )
 ```
+
+***
+
+Hallo
 
 
 ### What about the **tempo** of the songs, does it differ over the years? 
@@ -460,7 +439,7 @@ fica %>%
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c()
+  scale_fill_viridis_c(option = "cividis")
 
 ```
 
@@ -493,7 +472,7 @@ ido %>%
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c()
+  scale_fill_viridis_c(option = "cividis")
 ```
 
 ***
@@ -615,6 +594,38 @@ bind_rows(
 ***
 
 Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
+
+### Let's go more in depth into the corpus songs and look at their **keys**
+
+
+```{r, fig.width=9}
+bar_combined <- combined %>%
+  ggplot(aes(x = key_name)) +
+  geom_bar(stat="count", aes(fill = category), alpha = 0.9, position = "dodge") +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme_light() +
+  theme( 
+  legend.title = element_blank(),
+  axis.text = element_text(size = rel(0.95)), 
+  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
+  strip.text = element_text(size = 12),
+  plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+) +
+    labs(                      
+    x = "Key",
+    y = "Number of songs",
+    colour = element_blank()
+  ) +
+    ggtitle("Key distribution in the Wrapped playlists") 
+
+bar_combined 
+```      
+
+***
 
 ### How well can spotify analyse the tonality of the outliers of the corpus?: **Fica tudo bem**
 

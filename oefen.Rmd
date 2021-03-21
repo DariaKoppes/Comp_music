@@ -207,17 +207,16 @@ billie %>% ggplot(aes(x = energy, y = tempo, color = playlist_name)) + geom_poin
 
 
 ```{r}
-combined %>%
-  ggplot(aes(x = loudness, y=..density..)) +
-  geom_histogram(binwidth = 1, col="grey", fill = "#0088cc") +
-  geom_density() +
-  facet_wrap(~category) +
+bar_combined <- combined %>%
+  ggplot(aes(x = key_name)) +
+  geom_bar(stat="count", aes(fill = category), alpha = 0.9, position = "dodge") +
   scale_colour_brewer(        # Use the Color Brewer to choose a palette.
     type = "qual",            # Qualitative set.
     palette = "Paired"        # Name of the palette is 'Paired'.
   ) +
   theme_light() +
   theme( 
+  legend.title = element_blank(),
   axis.text = element_text(size = rel(0.95)), 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
   strip.text = element_text(size = 12),
@@ -225,13 +224,15 @@ combined %>%
     margin = margin(10, 0, 10, 0), hjust = 0.5)
 ) +
     labs(                      
-    x = "Energy",
-    y = "Density",
+    x = "Key",
+    y = "Number of songs",
     colour = element_blank()
   ) +
-    ggtitle("The density of songs filtered by energy over the years") 
-```
+    ggtitle("Key distribution in the Wrapped playlists") 
 
+bar_combined 
+```                 
+ 
 ```{r}
 billie %>%
   ggplot(aes(x = category, y = tempo)) +
