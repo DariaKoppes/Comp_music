@@ -140,7 +140,19 @@ combined_knn %>% get_conf_mat() %>% autoplot(type = "mosaic") + scale_colour_bre
 
 ***
 
-Hallo
+For my corpus I investigated if a classifier could be trained with Spotify features to distinguish between my three wrapped playlists. First a random-forest classifier was used to see which features were most important in classifying tracks.
+
+This gave the following features list:
+
+  - loudness
+  - duration
+  - energy 
+  - Timbre component 2, 3, 4 en 11
+
+On the left the mosaic plot shows the results, after 10-fold cross-validation of a k = 1 nearest neighbour classifier trained with the features list. 
+The classifier does not perform that well. It’s accuracy is below the 50 percent. The precision of the classifier’s predictions of wrapped playlist 2020 is the lowest with just 28 percent. The classifier is more likely to predict tracks of wrapped playlist 2020 as wrapped playlist 2018 than of actually part of wrapped playlist 2020.  
+
+Conclusion: Just looking at the Spotify features list provided above is not enough to get a well performing classifier to distinguish between my wrapped Spotify playlists. A reason for this could be that my playlists are very similar and that is why the classifier has trouble distinguishing between them or that we need different features to make the distinction.    
 
 
 ### What about the **tempo** of the songs, does it differ over the years? 
