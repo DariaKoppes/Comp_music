@@ -218,7 +218,7 @@ The mean tempo of the three wrapped playlists is 117 beats per minute (BPM). Thi
 
 ### **Introduction** of the chosen corpus
 
-PLEASE DO NOT SHOW THIS PORTFOLIO IN CLASS
+![Wrapped playlist 2018](images/2018.png)
 
 The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music I listened too has evolved over the last three years. Another research point is to find out if it is possible looking at the kind of music I was listening to, to decide the general mood of that year for me. 2019 for example was a nice year for me with a lot of traveling and fun things planned, 2020 on the other hand was a more harder year like for most people. Is this reflected in the music of my wrapped spotify playlists? 
 
