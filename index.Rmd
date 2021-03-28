@@ -1,7 +1,7 @@
 ---
-title: "computational_musicology"
+title: "Spotify Wrapped"
 author: "Daria Koppes"
-date: "8-2-2021"
+date: "28-3-2021"
 output:
   flexdashboard::flex_dashboard:
     storyboard: true
@@ -47,9 +47,9 @@ billie <- get_playlist_audio_features("spotify", "7L8fVkNZIHQ38k0hkcJkVo")
 ```{r, echo=FALSE}
 combined_1 <-
   bind_rows(
-    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 50),
-    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 50),
-    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 50)
+    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 5),
+    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 5),
+    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 5)
   )
 combined <-
   bind_rows(
@@ -130,101 +130,23 @@ combined_knn %>% get_pr()
 ```
 
 
-### Classification 
-```{r, fig.width=9}
-combined_knn %>% get_conf_mat() %>% autoplot(type = "mosaic") + scale_colour_brewer(
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
-  )
-```
-
-***
-
-For my corpus I investigated if a classifier could be trained with Spotify features to distinguish between my three wrapped playlists. First a random-forest classifier was used to see which features were most important in classifying tracks.
-
-This gave the following features list:
-
-  - loudness
-  - duration
-  - energy 
-  - Timbre component 2, 3, 4 en 11
-
-On the left the mosaic plot shows the results, after 10-fold cross-validation of a k = 1 nearest neighbour classifier trained with the features list. 
-The classifier does not perform that well. It’s accuracy is below the 50 percent. The precision of the classifier’s predictions of wrapped playlist 2020 is the lowest with just 28 percent. The classifier is more likely to predict tracks of wrapped playlist 2020 as wrapped playlist 2018 than of actually part of wrapped playlist 2020.  
-
-Conclusion: Just looking at the Spotify features list provided above is not enough to get a well performing classifier to distinguish between my wrapped Spotify playlists. A reason for this could be that my playlists are very similar and that is why the classifier has trouble distinguishing between them or that we need different features to make the distinction.    
-
-
-### What about the **tempo** of the songs, does it differ over the years? 
-
-```{r, fig.width=8}
-hist_tempo <- combined %>%
-  ggplot(aes(x = tempo)) +
-  geom_histogram(binwidth = 10, col="grey", fill = "#0088cc") +
-    geom_density() +
-  facet_wrap(~category) +
-  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
-  ) +
-  theme_light() +
-  theme( 
-  axis.text = element_text(size = rel(0.95)), 
-  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size = 12),
-    plot.title = element_text(size=12, 
-    margin = margin(10, 0, 10, 0), hjust = 0.5)
-) +
-    labs(                      
-    x = "Tempo",
-    y = "Number of songs",
-    colour = element_blank()
-  ) +
-    ggtitle("The tempo of the songs") 
-
-density_tempo <- ggplot(combined, aes(x=tempo, fill = category)) +
-  geom_density(alpha = 0.4) +
-    scale_colour_brewer(        # Use the Color Brewer to choose a palette.
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
-  ) +
-  theme_light() +
-      labs(                      
-    x = "Tempo",
-    y = "Density",
-    fill = element_blank()
-  ) +
-  theme(
-    plot.title = element_text(size=12, 
-    margin = margin(10, 0, 10, 0), hjust = 0.5)
-  )+
-geom_vline(xintercept = 116, linetype="dotted", 
-                color = "black", size=1.5) +
-   geom_text(aes(x=130, label="\nmean tempo", y=0.020), colour="black", text=element_text(size=10)) +
-    ggtitle("The density of songs filtered by tempo over the years") 
-
-grid.arrange(hist_tempo, density_tempo, nrow=2)
-```
-
-***
-
-For comparing the feature tempo between the three wrapped playlists, I created three histograms, one for each year, with a corresponding density plot of the three histograms combined. 
-
-Looking at these graphs one can conclude that the wrapped playlists are similar in their tempo. The density plots for the three years overlap almost completly. Wrapped 2019 just has a slight preference for lower tempo songs where the density is the highest. This corresponds with the previous finding of Wrapped 2019 having the lowest energy songs. 
-
-The mean tempo of the three wrapped playlists is 117 beats per minute (BPM). This is close to the preferred tempo of 120 BPM proposed by the article of Moelants published in 2002 [1]. My mean preferred tempo of songs is thus the same as the one they are proposing as the natural preferred tempo. 
-
-*[1] Moelants, Dirk. 2002. ‘Preferred Tempo Reconsidered.’ In Proceedings of the 7th International Conference on Music Perception and Cognition, pp. 580–83. Adelaide, Australia*
-
 ### **Introduction** of the chosen corpus
 
-![Wrapped playlist 2018](images/2018.png)
+**Research points**
 
-The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to see how the type of music I listened too has evolved over the last three years. Another research point is to find out if it is possible looking at the kind of music I was listening to, to decide the general mood of that year for me. 2019 for example was a nice year for me with a lot of traveling and fun things planned, 2020 on the other hand was a more harder year like for most people. Is this reflected in the music of my wrapped spotify playlists? 
+The corpus consists of three of my own wrapped Spotify playlists, from the years 2018, 2019 and 2020. I chose this corpus because I want to find out how the type of music I listened too has evolved over the last three years. The type of music will be defined according to different Spotify features such as *Energy*, *Tempo*, *Timbre* and more. Another research point is to find out if it is possible looking at the kind of music I was listening to, to decide the general mood of that year for me. 2019 for example was a general nice year for me with a lot of traveling and fun things planned, 2020 on the other hand was a more hard year, like for most people. Is this reflected in the music of my wrapped spotify playlists? 
 
-Comparison points would be artists and features of the songs like valence and energy. I expect some artists to come back each year because I have been listening to them for a while now, e.g Imagine Dragons. Also when I travel I tend to be listening to more foreign music, so I expect 2018 and 2019 to have more Spanish/Portuguese/French artists in them than 2020 for example. I am unsure if my type of music has significantly changed over the past three years but I am curious to look into it. 
+
+**Expectations**
+
+Comparison points for the wrapped playlists will be different Spotify features that are available on the playlist level. For the mood of songs features of the songs like valence and energy will be looked at in more depth. I expect that 2020 will have more 'sad' songs because my mood was more sadder in this year compared to 2019 and 2018. I expect 2019 to have the opposite result and contain more 'happy' and high energy, high tempo songs. For 2018 I have no specific expectations, my memory of that year is not very distinct and I did not listen to spotify that much yet in 2018 (I did not have a premium account yet). I do expect for 2018 and 2019 to have more foreign music in them than 2020. I tend to be listening to more foreign music while traveling, so I expect 2018 and 2019 to have more Spanish/Portuguese/French artists in them than 2020 for example. I am unsure if my type of music has significantly changed over the past three years, or stayed the same but I am curious find it out. 
+
+
+**Strengths and limitations of the corpus**
 
 The strength of the corpus is that it contains a significant amount of representative songs and especially for 2019 and 2020 I recognize all the numbers in it. In 2019 I was also pretty obsessed with Billie Eilish so it is typical to see that 20 of the 100 songs in my wrapped playlist are by her. For 2018 however I notice that some songs in the wrapped playlist I have never listened to before. I do not know how they got in my wrapped playlist. For example: Pastempomat sang by Dawid Pdsiadlo is a polish song and I am certain that I never listened to this song or any other polish song before. I will keep these songs in the playlist to have the same number of songs in every playlist, but remember that there are some songs in the 2018 wrapped playlist that are not representable for me. 
+
+![Wrapped playlist 2018](images/2018.png){width=33%}    ![Wrapped playlist 2019](images/2019.png){width=33%}    ![Wrapped playlist 2020](images/2020.png){width=33%}
 
 
 ### Lets start by comparing the **energy** of the songs
@@ -288,10 +210,14 @@ grid.arrange(histogram, density, nrow=2)
 
 ***
 
-To start looking at the differences in music throughout the year and focussing on the mood of the songs I started with a histogram comparing the energy of the songs over the three years. To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As I said in the introduction 2019 was a good year for me and i was wondering if that would show in the type of music. Maybe because it was a good year I did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
+To start looking at the differences in music throughout the year and focussing on the mood of the songs I started with a histogram comparing the energy of the songs over the three years. 
+
+To my surprise the year 2019 is actually the year with the lowest amount of high energy songs. As I mentioned in the introduction 2019 was a good year for me and I was wondering if that would show in the type of music. Maybe because it was a good year I did not need high energy music to cheer me up but could listen to more low-energy songs and that could explain the density being lower in 2019 for high energy songs in comparison to 2020 and 2018. 
+
+Another explanation could lie in the fact that 2019 contains a large amount of Billie Eilish songs. To see the more in depth influence of Billie Eilish see the storyboard: In depth visualisation of the influence of **Billie Eilish**. 
 
 
-### How much is my music of 2018, 2019 and 2020 alike in **mood**? 
+### Adding Valence to Energy to get the mood of the song: How much is my music of 2018, 2019 and 2020 alike in **mood**? 
 
 ```{r, fig.align='center', fig.width=9}
 scatterplotyears <- combined %>%
@@ -302,10 +228,9 @@ scatterplotyears <- combined %>%
     aes(
       x = valence,
       y = energy,
-      size = loudness
     )
   ) +
-  geom_point(color = '#008ae6', alpha = 0.6) +
+  geom_point(color = '#008ae6', alpha = 0.6, size=2) +
   facet_grid(.~category) +     # Separate charts per playlist.
   scale_x_continuous(         # Fine-tune the x axis.
     limits = c(0, 1),
@@ -355,8 +280,11 @@ scatterplotyears
 
 ***
 
-An interesting find already is that there are not much calm songs in my Wrapped playlists, although I even have a separate playlist called 'calm' where I listen to all the time. Maybe my perception of calm songs is different than that of spotify. 
-Just a reminder the dark blue minor dots mean the song sounds more dark or gloomy and the light blue major dots mean the song sounds more bright or happy. Also interesting to see is that in the sad category of low energy and low valence a lot of songs have a major mode which should make them sound more bright or happy. This is a contradictory find. 
+The overall pattern, especially between 2019 and 2020, is similar. The songs are quite equally spread over the categories sad, angry and happy with the least songs in the category calm. 
+
+This is already an interesting find that there are not much calm songs in my Wrapped playlists, although I even have a separate playlist called 'calm' where I listen to all the time. Maybe my perception of calm songs is different than that of spotify. 
+
+The wrapped playlist of 2018 has more songs in the categories angry and happy. As stated in the introduction some songs in this playlist I have not listened to myself, but spotify selected them. It could be that spotify tends to add more angry and happy songs to a wrapped playlist, but further research is neccesary to find out if this is true and what the reason for it could be. 
 
 
 ### In depth visualisation of the influence of **Billie Eilish**
@@ -424,8 +352,108 @@ ggplotly(scatterplotbillie)
 
 I also want to see how much the influence of Billie Eilish is on the wrapped playlist of 2019 because 20 numbers are from her in this list. As expected most of her songs fall under the category 'sad'. Because she had a significant amount of numbers in the 2019 wrapped playlist, this can also account for the more low energy songs in this playlist relative to 2020 and 2018. 
 
+This graph is interactive so when hovering over the points, the valence, energy and trackname of each individual song appears. 
 
-### The most calm song out of all the different playlists chromogram: **Fica tudo bem**
+### What about the **tempo** of the songs, does it differ over the years? 
+
+```{r, fig.width=8}
+hist_tempo <- combined %>%
+  ggplot(aes(x = tempo)) +
+  geom_histogram(binwidth = 10, col="black", fill = "#0088cc") +
+    geom_density() +
+  facet_wrap(~category) +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme_light() +
+  theme( 
+  axis.text = element_text(size = rel(0.95)), 
+  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
+  strip.text = element_text(size = 12),
+    plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+) +
+    labs(                      
+    x = "Tempo",
+    y = "Number of songs",
+    colour = element_blank()
+  ) +
+    ggtitle("The tempo of the songs") 
+
+density_tempo <- ggplot(combined, aes(x=tempo, fill = category)) +
+  geom_density(alpha = 0.4) +
+    scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme_light() +
+      labs(                      
+    x = "Tempo",
+    y = "Density",
+    fill = element_blank()
+  ) +
+  theme(
+    plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  )+
+geom_vline(xintercept = 116, linetype="dotted", 
+                color = "black", size=1.5) +
+   geom_text(aes(x=130, label="\nmean tempo", y=0.020), colour="black", text=element_text(size=10)) +
+    ggtitle("The density of songs filtered by tempo over the years") 
+
+grid.arrange(hist_tempo, density_tempo, nrow=2)
+```
+
+***
+
+For comparing the feature tempo between the three wrapped playlists, I created three histograms, one for each year, with a corresponding density plot of the three histograms combined. 
+
+Looking at these graphs one can conclude that the wrapped playlists are similar in their tempo. The density plots for the three years overlap almost completly. Wrapped 2019 just has a slight preference for lower tempo songs where the density is the highest. This corresponds with the previous finding of Wrapped 2019 having the lowest energy songs. 
+
+The mean tempo of the three wrapped playlists is 117 beats per minute (BPM). This is close to the preferred tempo of 120 BPM proposed by the article of Moelants published in 2002 [1]. My mean preferred tempo of songs is thus the same as the one they are proposing as the natural preferred tempo. 
+
+*[1] Moelants, Dirk. 2002. ‘Preferred Tempo Reconsidered.’ In Proceedings of the 7th International Conference on Music Perception and Cognition, pp. 580–83. Adelaide, Australia*
+
+
+### Let's go more in depth into the corpus songs and look at their **keys**
+
+```{r, fig.width=9}
+bar_combined <- combined %>%
+  ggplot(aes(x = key_name)) +
+  geom_bar(stat="count", aes(fill = category), alpha = 0.9, position = "dodge") +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme_light() +
+  theme( 
+  legend.title = element_blank(),
+  axis.text = element_text(size = rel(0.95)), 
+  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
+  strip.text = element_text(size = 12),
+  plot.title = element_text(size=12, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+) +
+    labs(                      
+    x = "Key",
+    y = "Number of songs",
+    colour = element_blank()
+  ) +
+    ggtitle("Key distribution in the Wrapped playlists") 
+
+bar_combined 
+```      
+
+***
+
+Left is a histogram with for every key shown how many songs in each wrapped playlist are played in that key. 
+
+The most common key in the corpus is for all the three playlists C and the least common key D#. 
+
+2019 and 2020 have for some keys the exact same number of songs in that key and other keys similar number of songs in it. 2018 has a more different distribution of keys and once again just like in the mood comparison graphic wrapped playlist 2018 is a bit of an outlier out of the three playlists. 
+
+### **1.1 Chromagram**: The most calm song out of all the different playlists: *Fica tudo bem*
 
 ```{r}
 fica <-
@@ -451,15 +479,19 @@ fica %>%
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c(option = "cividis")
+  scale_fill_viridis_c(option = "cividis") + theme(plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  ) +
+  ggtitle("Chromagram Fica tudo bem")
 
 ```
 
 ***
-The chromagram of 'Fica Tudo Bem' looks very regular with the time intervals being the same between the different notes played. Maybe this causes the song to sound extra calm. The most used keys are: C, D#/Eb and F. A comparison with the most angry song chromagram is made in the next storyboard. 
+
+The chromagram of 'Fica Tudo Bem' looks very regular with the time intervals being the same between the different notes played. Maybe this causes the song to sound extra calm. The most used keys are: C, D#/Eb and F. To have a comparison point for this chromagram, on the next storyboard a chromagram of the most angry song is made. 
 
 
-### The most angry song out of the playlists chromogram: **Like I do**
+### **1.2 Chromagram**: The most angry song out of the playlists chromogram: *Like I do*
 
 ```{r}
 ido <-
@@ -484,13 +516,20 @@ ido %>%
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c(option = "cividis")
+  scale_fill_viridis_c(option = "cividis") +
+  theme(
+        plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  )+
+  ggtitle("Chromagram Like I do")
 ```
 
 ***
-The chromogram of 'Like I do' looks a lot less regular than the one of the calm song. The notes have different magnitude ranges at different time intervals. For example the first 50 seconds D#/Eb is played frequently than 50 seconds not anymore and after 100 seconds it comes back again in magnitude. The most used keys are: C, G#/Ab and G. 
+The chromogram of 'Like I do' looks a lot less regular than the one of the most calm song. The notes have different magnitude ranges at different time intervals. For example the first 50 seconds D#/Eb is played frequently then 50 seconds not anymore and after 100 seconds it comes back again in magnitude. The most used keys are: C, G#/Ab and G.
 
-### Further discussion of the chroma and timbre features of the outliers in the corpus: **Pastempomat**
+In both outliers C is the most used keys, which also came back as the most common key in general for songs in the corpus. 
+
+### **2.1** Further discussion of the **chroma and timbre features** of the outliers in the corpus: *Pastempomat*
 
 ```{r, fig.width=6}
 polen <-
@@ -537,8 +576,11 @@ bind_rows(
   theme_classic() +
   labs(x = "seconds", y = "") +
   theme(
-    strip.text = element_text(size = 14)
-  )
+    strip.text = element_text(size = 14),
+        plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  ) +
+  ggtitle('Self-Similarity matrices Pastempomat')
 
 ```
 
@@ -547,10 +589,12 @@ bind_rows(
 
 Pastempomat was one of the songs in the 2018 wrapped playlist that I did not listen to before. That is why I want to look at the details of the song to try to understand why spotify has put the song in my wrapped 2018 playlist. 
 
-The chroma- and timbre-based self-similarity matrices show a clear structure in the song. The segments represent the bars of the song. In the chroma-based SSM especially a lot of paths are visible. In the song you can hear this as certain order of cords being repeated after each other. The first 10 seconds sound the same as the 10 seconds that follow thereafter. In the timbre-based SSM this shows a block-like structure for the first 20 seconds because of the homogeneous harmony in the sound. Both SSM show a bright vertical yellow line around 125 seconds. This is the start of the bridge where the background music stops and you just hear the singer sing. Another point where the background music stops is around 145 seconds which is again shown by bright vertical line in the timbre-based SSM but not in the chroma-based SSM. 
+The chroma- and timbre-based self-similarity matrices show a clear structure in the song. The segments represent the bars of the song. In the chroma-based SSM especially a lot of paths are visible. In the song you can hear this as certain order of cords being repeated after each other. The first 10 seconds sound the same as the 10 seconds that follow thereafter. In the timbre-based SSM this shows a block-like structure for the first 20 seconds because of the homogeneous harmony in the sound. 
+
+Both SSM show a bright vertical yellow line around 125 seconds. This is the start of the bridge where the background music stops and you just hear the singer sing. Another point where the background music stops is around 145 seconds which is again shown by bright vertical line in the timbre-based SSM but not in the chroma-based SSM. 
 
 
-### Further discussion of the chroma and timbre features of the outliers in the corpus: **Fica tudo bem**
+### **2.2** Further discussion of the **chroma and timbre features** of the outliers in the corpus: *Fica tudo bem*
 
 ```{r, fig.width=6}
 
@@ -598,48 +642,22 @@ bind_rows(
   theme_classic() +
   labs(x = "", y = "")+
   theme(
-    strip.text = element_text(size = 14)
-  )
+    strip.text = element_text(size = 14),
+        plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  ) +
+  ggtitle('Self-Similarity matrices Fica tudo bem')
 
 ```
 
 ***
 
-Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
+Just like the chromagram was very regular in structure for Fica tudo bem, the chroma-based self-similarity matrix is too. It consist of a lot of small block-like structure. The timbre-based SSM has some more differences in structure. Here bigger block-like structure is seen where the harmony of the song is homogeneous. 
 
-### Let's go more in depth into the corpus songs and look at their **keys**
+The parts where just instrumental music is played are clearly seen around 50 to 65 seconds and in the last part of the song after 130 seconds. The refrain is being played twice which is seen by the two darker blocks from 35 to 50 seconds and from 95 to 110 seconds. 
 
 
-```{r, fig.width=9}
-bar_combined <- combined %>%
-  ggplot(aes(x = key_name)) +
-  geom_bar(stat="count", aes(fill = category), alpha = 0.9, position = "dodge") +
-  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
-  ) +
-  theme_light() +
-  theme( 
-  legend.title = element_blank(),
-  axis.text = element_text(size = rel(0.95)), 
-  strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
-  strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
-    margin = margin(10, 0, 10, 0), hjust = 0.5)
-) +
-    labs(                      
-    x = "Key",
-    y = "Number of songs",
-    colour = element_blank()
-  ) +
-    ggtitle("Key distribution in the Wrapped playlists") 
-
-bar_combined 
-```      
-
-***
-
-### How well can spotify analyse the tonality of the outliers of the corpus?: **Fica tudo bem**
+### **3.1** How well can spotify analyse the **tonality** of the outliers of the corpus?: *Fica tudo bem*
 
 ```{r}
 circshift <- function(v, n) {
@@ -774,7 +792,7 @@ As one can see right away is that the key estimates are very blurry. A clear key
 A final observation in the keygram are the vertical yellow parts, first one being seen between 50 and 65 seconds. In the song these sections are the parts where just instrumentals are playing and where the key-finding algorithm has the most trouble finding an estimate for the key of that section. 
 
 
-### How well can spotify analyse the tonality of the outliers of the corpus?: **Like I do**
+### **3.2** How well can spotify analyse the **tonality** of the outliers of the corpus?: *Like I do*
 
 ```{r}
 like <-
@@ -822,3 +840,48 @@ A slighty better estimate of keys is made in this keygram compared to the previo
 But for most of the song the key estimates are very blurry and not clear. Especially in the refrain parts of the song at around 45-95s and 145-190s. 
 
 After looking at the two keygrams it can be concluded that Spotify has trouble analysing the tonality of the outliers in my corpus. 
+
+
+### Coming back to the general corpus and see if a **classifier** can be trained on it?  
+
+```{r, fig.width=9}
+plot <- combined_knn %>% get_conf_mat() %>% autoplot(type = "mosaic") + scale_colour_brewer(
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  theme(
+    plot.title = element_text(size=14, 
+    margin = margin(10, 0, 10, 0), hjust = 0.5)
+  ) +
+  ggtitle('Confusion matrix corpus')
+
+plot
+```
+
+***
+
+For my corpus I investigated if a classifier could be trained with Spotify features to distinguish between my three wrapped playlists. First a random-forest classifier was used to see which features were most important in classifying tracks.
+
+This gave the following features list:
+
+  - loudness
+  - duration
+  - energy 
+  - Timbre component 2, 3, 4 en 11
+
+On the left the mosaic plot of the confusion matrix shows the results, after 10-fold cross-validation of a k = 1 nearest neighbour classifier trained with the features list. 
+The classifier does not perform that well. It’s accuracy is below the 50 percent. The precision of the classifier’s predictions of wrapped playlist 2020 is the lowest with just 28 percent. The classifier is more likely to predict tracks of wrapped playlist 2020 as wrapped playlist 2018 than of actually part of wrapped playlist 2020.  
+
+Conclusion: Just looking at the Spotify features list provided above is not enough to get a well performing classifier to distinguish between my wrapped Spotify playlists. A reason for this could be that my playlists are very similar and that is why the classifier has trouble distinguishing between them or that we need different features to make the distinction.
+
+### Afther the research, what can be **concluded** about the three Wrapped playlists? 
+
+The goal of this research was to find out how the type of music I listened too has evolved over the last three years. Different Spotify features were used for answering the question and the overall results are shown in the table below. 
+
+|Energy  | Mood | Tempo | Keys | Outliers|
+| ------ | ---- | ----- | ---- | --------|
+| 2019 had the lowest overall energy in comparison to 2018 and 2020. With 2018 having the most high energy songs. | All of the three playlists did not have many 'calm' songs. The other songs were equally distributed across 'angry', 'happy' and 'sad'. With 2018 having a slight preference for 'happy' and 'angry'. | Tempo was very similar between the three playlists with 2019 having a slight preference for lower tempo songs. | The three playlists had the same most common and least common key. And 2019 and 2020 were very similar looking at the key of their songs. | The most calm and most angry song do show differences, but more outliers need to be investigated to analyse a real pattern. |
+
+Conclusion: The tree wrapped playlist have stayed pretty similiar over the last three years. It depends on the Spotify feature you are focusing on which of the three playlists are the most similar to each other. The extra research question: can you tell from the wrapped playlist what my overall mood was for that year? had contradictionary results compared to my expectations beforehand. 2019 was overall the playlist with the most 'sad', low energy and low tempo songs, while I expected the opposite. 
+
+The result of this research has given me inside about which music I tend to be listening to the most over the years. I have a broad interest in different music styles and you could see in the results that not one mood category, tempo, key, or energy level was over represented in my corpus. This broad range of results can cause the similarity between the three playlists because I do not have one specific music style with specific set of Spotify features. Also I found out that if I have a more fun and energetic year I listen to more 'sad' low energy songs. The results of 2019 however could have been affected with the large influence of the 20 Billie Eilish songs. Tracking my wrapped playlist for the years to come will give more insights in my music type and when i listen to which kind of music. 
