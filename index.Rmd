@@ -47,9 +47,9 @@ billie <- get_playlist_audio_features("spotify", "7L8fVkNZIHQ38k0hkcJkVo")
 ```{r, echo=FALSE}
 combined_1 <-
   bind_rows(
-    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 5),
-    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 5),
-    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 5)
+    eighteen %>% mutate(category = "Wrapped playlist 2018") %>% slice_head(n = 50),
+    nineteen %>% mutate(category = "Wrapped playlist 2019") %>% slice_head(n = 50),
+    twenty %>% mutate(category = "Wrapped playlist 2020") %>% slice_head(n = 50)
   )
 combined <-
   bind_rows(
@@ -170,7 +170,7 @@ histogram <- combined %>%
   axis.text = element_text(size = rel(0.95)), 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
   strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
+  plot.title = element_text(size=14, 
     margin = margin(10, 0, 10, 0), hjust = 0.5)
 ) +
     labs(                      
@@ -199,7 +199,7 @@ density <- ggplot(combined, aes(x=energy, fill = category)) +
     fill = element_blank()
   ) +
   theme(
-    plot.title = element_text(size=12, 
+    plot.title = element_text(size=14, 
     margin = margin(10, 0, 10, 0), hjust = 0.5)
   )+
     ggtitle("The density of songs filtered by energy over the years") 
@@ -257,7 +257,7 @@ scatterplotyears <- combined %>%
   axis.text = element_text(size = rel(0.95)), 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
   strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
+  plot.title = element_text(size=14, 
     margin = margin(10, 0, 10, 0), hjust = 0.5), 
   legend.key = element_rect(fill = "#e7e7e4"),
 ) + 
@@ -432,7 +432,7 @@ bar_combined <- combined %>%
   axis.text = element_text(size = rel(0.95)), 
   strip.background = element_rect(fill="#008ae6", size=1.5, linetype="solid"),
   strip.text = element_text(size = 12),
-  plot.title = element_text(size=12, 
+  plot.title = element_text(size=14, 
     margin = margin(10, 0, 10, 0), hjust = 0.5)
 ) +
     labs(                      
